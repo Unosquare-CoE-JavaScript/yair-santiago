@@ -91,3 +91,45 @@ The book states that, depending on where is JS being run, there might be some di
   * True global variables need to use `var` to avoid being oddly excluded.
   * The variable `window.name` behaves strangely even when being shadowed.
   * Every element with an `id` property can have a global created for it (yet it is not recommended to use them).
+
+In the case JS is run inside a _Web Worker_, there is no window object and global context is only available inside `self`.
+
+In the case of Node, there is an especific object literally called `global`, that while it doens't expose any browser related API's (some of them have been reimplemented, though), it exposes globally to all modules as expected.
+
+## Chapter 5
+
+This part starts making a common example for many JS developers, that just as it says, usually nobody questions why, and the reason would be called "hoisting".
+
+Hoisting is a feature/benefit from the lexical parser phase of the script running, which does "move" function and variable declarations to the top, so they can be used anywhere within the scope. It can be considered usually a "rewrite" of the original script.
+
+Hoisting, however, does take very special (and somehow surprising) behaviors in many cases, like in the following example:
+
+```javascript
+var preAssignedVar = "Hey";
+console.log(preAssignedVar); // will print "Hey"
+
+var preAssignedVar;
+```
+The logic might say that if we call `console.log(preAssignedVar)` at the end, the value might be `undefined`, but that is not the case. The value `"Hey"` will be kept, because such assignation has no subsecuent call and `preAssignedVar` was already initiallized, making the following declaration a no-op.
+
+Shall there be another redeclaration (with assignation) to such variable, like
+```javascript
+var preAssignedVar = undefined;
+```
+then the value would change for the following lines when called. This reassignation can _only_ be done with `var`, not `let` and even more impossibly with `const`.
+
+A following section explains there is only a declaration when using `var` inside loops, but the reasignation is what makes the value change, like in their example:
+
+```javascript
+var keepGoing = true; 
+while (keepGoing) {
+  var value = Math.random(); 
+  if (value > 0.5) {
+    keepGoing = false;
+  }
+}
+```
+`value` is not redeclared, because of how `var` and hoisting works.
+
+The same will keep true using `let` or `const` in `for` cycles, but make an exception with `const` when doing incremental cicles, because the increment will try to change the constant value.
+
