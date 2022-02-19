@@ -133,3 +133,80 @@ while (keepGoing) {
 
 The same will keep true using `let` or `const` in `for` cycles, but make an exception with `const` when doing incremental cicles, because the increment will try to change the constant value.
 
+Last part goes with a warning, which says that `let` and `const`do also hoist, but without being initialized with a value like with , so they're there, just not available to do something with their values. An advice from the author is that these variables should be put at the start of the scope, as a "standard" code would.
+
+## Chapter 6
+
+Now, this book as been talking about how the scopes can mix up things and some advantages/disadvantages of it, but this chapter in particular, now its more about how to limit the exposure or privilege of the variables, as it is considered a _good practise_. The concept reviewed here in particular is POLP (_Principle of Lease Privilege_).
+
+POLP treats variables as something that might get collisions, unexpected behavior/results or non-wanted dependency. All of this relies precisely on how scopes work, like the first paragraph asks: why can't just every variable be on the global scope? The reason is something we've naturally come to avoid as our minds get to understand the code and can be stressed into just one word: problems.
+
+A common way to protect the scope of variables is wrapping their declarations only within functions that return their actual function after wrapping the "global" variables it uses. An example of this is:
+
+```javascript
+function wrappedFnWithGlobals() {
+  var wrappedResults = {};
+  
+  function doCalc(n) {
+    if (n == 1) return 1;
+    if (!wrappedResuls[n]) {
+      wrappedResults[n] = n * Math.PI;
+    }
+    return wrappedResults[n];
+  }
+  
+  return doCalc;
+}
+```
+
+## Chapter 7
+
+Closure is, in short, the ability or advantage to access objects or variables outside their scope within functions. This is exemplified in the book with:
+
+```javascript
+function lookupStudent(studentID) {
+  var students = [
+      { id: 14, name: "Kyle" },
+      { id: 73, name: "Suzy" },
+      { id: 112, name: "Frank" },
+      { id: 6, name: "Sarah" }
+  ];
+  return function greetStudent(greeting) {
+      var student = students.find(
+          student => student.id == studentID
+      );
+      return `${greeting}, ${student.name}!`;
+  };
+}
+var chosenStudents = [
+  lookupStudent(6),
+  lookupStudent(112)
+];
+```
+
+In this part, the peculiarity to this code is the fact that the `studentId` is kept along with the `students` even when a function declaration is returned. The common conception is that the students variable would be deleted by the garbage collector once executed, but instead, it is kept because of the reference inside the closure.
+
+Closure also follows POLP, as the needed variables are _not_ getting modified unintentionally after of the moment they're set up from outside (which may be intended or not). Subsequent calls also keep using the enclosed values so, for example, a counter will only increase or decrease only by the calls inside.
+
+Setting up event listeners is also something that can benefit from closures, as references are used/kept within the setup function.
+
+## Chapter 8
+
+Just like the introduction of this chapter begins with, the Modules are the mix of all that has been thaught here: closures and scopes.
+
+Modules should respect visibility to be called like that: private members (which access should _not_ be exposed outside) and public members (which _can_ and should be exposed outside).
+
+Modules have 3 ways to be declared in Javascript:
+
+* **Clasic Modules**
+  It can be done using IIFE or Instance-like definitions.
+
+* **CommonJS Modules**
+  (Only available for Node) These modules are defined within their own file, and can use "global" variables or functions inside those files, which won't be output to the global scope unless they're exported using `module.exports`.
+  Later they can be imported inside an object by using
+
+  ```javascript
+  var Manager = require('path/to/managerModule.js');
+  ```
+
+* **ESM **
