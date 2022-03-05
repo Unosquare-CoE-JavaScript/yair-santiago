@@ -1,8 +1,20 @@
 import React, { useState } from "react";
-import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Popover,
+  Row,
+} from "reactstrap";
 
 export default function SummaryForm() {
   const [tcAgreed, setTcAgreed] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const togglePopover = () => setPopoverOpen((prev) => !prev);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,14 +29,29 @@ export default function SummaryForm() {
           <FormGroup>
             <Label htmlFor="tc-agreed-cb">
               <Input
-                type=" checkbox"
+                type="checkbox"
                 id="tc-agreed-cb"
                 checked={tcAgreed}
                 aria-checked={tcAgreed}
                 onChange={handleCheck}
               />
-              I agree to the terms and conditions
+              I agree to the{" "}
+              <a
+                href="#"
+                id="popover-tc"
+                onMouseEnter={setPopoverOpen.bind(null, true)}
+                onMouseLeave={setPopoverOpen.bind(null, false)}
+              >
+                terms and conditions
+              </a>
             </Label>
+            <Popover
+              target="popover-tc"
+              toggle={togglePopover}
+              isOpen={popoverOpen}
+            >
+              No ice cream will actually be delivered
+            </Popover>
           </FormGroup>
         </Col>
         <Col md={5}>
