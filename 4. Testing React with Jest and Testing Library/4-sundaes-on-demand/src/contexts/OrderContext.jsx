@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState } from "react";
 import { pricePerItem } from "../constants";
 
+const initialAmounts = { scoops: {}, toppings: {} };
+
 const OrderContext = createContext();
 
 export const useOrderContext = () => {
@@ -14,7 +16,7 @@ export const useOrderContext = () => {
 };
 
 export const OrderContextProvider = ({ children }) => {
-    const [itemAmounts, setItemAmounts] = useState({ scoops: {}, toppings: {} });
+    const [itemAmounts, setItemAmounts] = useState({ ...initialAmounts });
     const [itemCosts, setItemCosts] = useState({ ...pricePerItem });
 
     const updateCosts = (costs) => setItemCosts(costs);
@@ -36,12 +38,14 @@ export const OrderContextProvider = ({ children }) => {
         }, 0);
     };
 
+    const resetAmounts = () => setItemAmounts({ ...initialAmounts });
+
     const getTotal = () => {
         return Object.keys(itemAmounts).reduce((acc, type) => acc + getSubtotal(type), 0);
     };
 
     return (
-        <OrderContext.Provider value={{ itemAmounts, updateItem, getSubtotal, getTotal, updateCosts }}>
+        <OrderContext.Provider value={{ itemAmounts, updateItem, getSubtotal, getTotal, updateCosts, resetAmounts }}>
             {children}
         </OrderContext.Provider>
     );
