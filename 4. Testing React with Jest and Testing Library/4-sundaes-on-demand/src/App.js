@@ -1,18 +1,19 @@
-import logo from "./logo.svg";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import SummaryForm from "./pages/summary/SummaryForm";
-import { OrderContextProvider } from "./contexts/OrderContext";
-import OrderEntry from "./pages/entry/OrderEntry";
 import { Container } from "reactstrap";
+import { OrderContextProvider } from "./contexts/OrderContext";
+import { NavigationContextProvider } from "./contexts/PageNavigation";
+import { Routes } from "./navigation/Routes";
 
 function App() {
     return (
-        <OrderContextProvider>
-            <Container fluid className="App">
-                <OrderEntry />
-            </Container>
-        </OrderContextProvider>
+        <NavigationContextProvider>
+            <OrderContextProvider>
+                <Container fluid className="App">
+                    <Routes />
+                </Container>
+            </OrderContextProvider>
+        </NavigationContextProvider>
     );
 }
 
